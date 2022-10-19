@@ -1,0 +1,1 @@
+[{"producto":"smart-TV","precio":300,"id":1},{"producto":"Netbook","precio":500,"id":2}]{"producto":"Celular","precio":200,"id":3}]

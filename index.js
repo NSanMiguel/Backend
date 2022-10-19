@@ -1,48 +1,56 @@
-class Usuario {
-    constructor (nombre,apellido){
-        this.nombre = nombre
-        this.apellido = apellido
-        this.libros = []
-        this.mascotas = [] 
-    }
+const fs=require('fs')
 
-    getFullName() {
-        return console.log( this.nombre  + ' ' +  this.apellido )
+async function crearTxt(texto){   
+    try{
+        await fs.promises.writeFile('./productos.txt', JSON.stringify(texto), 'utf-8')
+        console.log('Guardado')
     }
-
-    addMascota(mascota){
-        let nuevaMascota = mascota        
-        this.mascotas.push(nuevaMascota)
-        return mascota
+    catch(err){
+        console.log('No se puede editar el archivo' + err)
     }
-
-    addBook(nombre,autor){
-        let nuevoLibro = {nombre,autor}
-        this.libros.push(nuevoLibro)
-        return nombre,autor
-    }
-    
-    getBookNames(){
-        this.libros.forEach(element => {
-            console.log(element.nombre)
-        });
-    }
-
-    countMascotas(){
-        return console.log('cantidad de mascotas ' + this.mascotas.length)
-    }
-        
-
 }
 
-let nuevoUsuario = new Usuario (nombre='Nicolas',apellido='San Miguel')
+class Contenedor {
+    static index = 0
+    constructor(){
+        this.objetos = []
+    }
 
-nuevoUsuario.getFullName()
-nuevoUsuario.addBook('Martin Fierro','Jose Hernandez')
-nuevoUsuario.addBook('La naranja mecanica','Anthony Burgess')
-nuevoUsuario.addBook('Operacion Masacre','Rodolfo Walsh')
-nuevoUsuario.addMascota('perro')
-nuevoUsuario.addMascota('gato')
-nuevoUsuario.addMascota('pez')
-nuevoUsuario.getBookNames()
-nuevoUsuario.countMascotas()
+    save(objeto){
+        Contenedor.index ++
+        objeto.id = Contenedor.index
+        this.objetos.push(objeto)
+        crearTxt(this.objetos)
+    }
+
+    getById(id){
+        const producto = this.objetos.find(prod => prod.id === id)
+        console.log(producto)
+    }
+    async getAll(){
+        try{
+            const productos = await fs.promises.readFile('./productos.txt','utf-8')
+            console.log(productos)
+        }catch(err){
+            console.log('No se pudo leer el archivo ' + err)
+        }
+    }
+    async deleteAll(){
+            try{
+                await fs.promises.unlink('./productos.txt')
+                console.log('Archivo eliminado')
+            }catch(err){
+                console.log('No se puede eliminar el archivo' + err)
+            }
+        }
+}
+
+
+nuevoObjeto = new Contenedor()
+nuevoObjeto.save({producto:'smart-TV', precio: 300})
+nuevoObjeto.save({producto:'Netbook', precio: 500})
+nuevoObjeto.save({producto:'Celular', precio: 200})
+nuevoObjeto.getById(2)
+nuevoObjeto.getById(3)
+nuevoObjeto.getAll()
+//nuevoObjeto.deleteAll()
